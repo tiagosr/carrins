@@ -1,0 +1,98 @@
+<!doctype html>
+<html>
+    <head>
+        <meta charset="UTF-8" />
+        <title>Carrins</title>
+        <script src="phaser.min.js"></script>
+    </head>
+    <body>
+
+    <script type="text/javascript">
+
+    window.onload = function() {
+
+        Carrinho = function(game, index, color, x, y, angle, pad) {
+            this.game = game;
+            this.laps = 0;
+            this.index = index;
+            this.maxSpeed = 100;
+            this.currentSpeed = 0;
+            this.inGround = true;
+
+            this.drag = 300;
+
+            this.car = game.add.sprite(x, y, 'carrinho');
+            this.car.anchor.set(0.5);
+
+            game.physics.enable(this.car, Phaser.Physics.ARCADE);
+            this.car.body.immovable = false;
+            this.car.body.collideWorldBounds = true;
+            //this.car.body.linearDamping = 100;
+            this.car.body.drag.set(300, 300);
+            this.car.body.bounce.setTo(1,1);
+
+            this.car.angle = angle;
+            this.pad = pad;
+        }
+
+        Carrinho.prototype.update = function() {
+            if(this.pad.isDown(Phaser.Gamepad.XBOX360_DPAD_LEFT)) {
+                //console.log("oe");
+                this.car.body.angularVelocity = -100; 
+            } else if (this.pad.isDown(Phaser.Gamepad.XBOX360_DPAD_RIGHT)) {
+                this.car.body.angularVelocity = 100;
+            } else {
+                this.car.body.angularVelocity = 0;
+            }
+            if(this.pad.isDown(Phaser.Gamepad.XBOX360_A)) {
+                this.currentSpeed = 300;
+            } else {
+                this.currentSpeed = 0;
+            }
+            var n = Phaser.Point.normalize(this.car.body.velocity);
+            this.car.body.drag.set(Math.abs(this.drag*n.x), Math.abs(this.drag*n.y));
+            if(this.inGround) {
+                this.game.physics.arcade.accelerationFromRotation(this.car.rotation, this.currentSpeed, this.car.body.acceleration);
+            }
+                    
+        }
+
+        var game = new Phaser.Game(800, 600, Phaser.AUTO, '',
+                                   {
+                                    preload: preload,
+                                    create: create,
+                                    update: update,
+                                    render: render
+                                   });
+
+        function preload () {
+
+            game.load.image('logo', 'phaser.png');
+            game.load.image('carrinho', 'carrim1.png')
+
+        }
+
+        var carrinho1;
+        function create () {
+            game.world.setBounds(0, 0, 800, 600);
+            game.input.gamepad.start();
+            game.physics.startSystem(Phaser.Physics.ARCADE);
+
+            carrinho1 = new Carrinho(game, 0, 0, game.world.centerX, game.world.centerY, 0, game.input.gamepad.pad1);
+
+        }
+
+        function update() {
+            carrinho1.update();
+        }
+
+        function render() {
+
+        }
+
+    };
+
+    </script>
+
+    </body>
+</html>
