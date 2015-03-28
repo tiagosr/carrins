@@ -4,6 +4,12 @@
         <meta charset="UTF-8" />
         <title>Carrins</title>
         <script src="phaser.min.js"></script>
+        <style type="text/css">
+        * {
+            margin: 0;
+            padding: 0;
+        }
+        </style>
     </head>
     <body>
 
@@ -11,7 +17,7 @@
 
     window.onload = function() {
 
-        Carrinho = function(game, index, color, x, y, angle, pad) {
+        Carrinho = function(game, index, color, x, y, angle, keys, pad) {
             this.game = game;
             this.laps = 0;
             this.index = index;
@@ -33,18 +39,26 @@
 
             this.car.angle = angle;
             this.pad = pad;
+            this.keys = {};
+            var car = this;
+            Object.keys(keys).forEach(function(i) {
+                car.keys[i] = car.game.input.keyboard.addKey(keys[i]);
+                car.game.input.keyboard.addKeyCapture([i])
+                console.log(car.keys[i])
+            });
+            console.log(this.keys)
         }
 
         Carrinho.prototype.update = function() {
-            if(this.pad.isDown(Phaser.Gamepad.XBOX360_DPAD_LEFT)) {
+            if(this.pad.isDown(Phaser.Gamepad.XBOX360_DPAD_LEFT)||this.keys['left'].isDown) {
                 //console.log("oe");
                 this.car.body.angularVelocity = -100; 
-            } else if (this.pad.isDown(Phaser.Gamepad.XBOX360_DPAD_RIGHT)) {
+            } else if (this.pad.isDown(Phaser.Gamepad.XBOX360_DPAD_RIGHT)||this.keys.right.isDown) {
                 this.car.body.angularVelocity = 100;
             } else {
                 this.car.body.angularVelocity = 0;
             }
-            if(this.pad.isDown(Phaser.Gamepad.XBOX360_A)) {
+            if(this.pad.isDown(Phaser.Gamepad.XBOX360_A)||this.keys.accel.isDown) {
                 this.currentSpeed = 300;
             } else {
                 this.currentSpeed = 0;
@@ -72,18 +86,31 @@
 
         }
 
-        var carrinho1;
+        var carrinhos;
         function create () {
             game.world.setBounds(0, 0, 800, 600);
             game.input.gamepad.start();
             game.physics.startSystem(Phaser.Physics.ARCADE);
 
-            carrinho1 = new Carrinho(game, 0, 0, game.world.centerX, game.world.centerY, 0, game.input.gamepad.pad1);
+            carrinhos = [
+                new Carrinho(game, 0, 0,
+                             game.world.centerX,
+                             game.world.centerY,
+                             0,
+                             {
+                                accel: Phaser.Keyboard.UP,
+                                brake: Phaser.Keyboard.DOWN,
+                                left:  Phaser.Keyboard.LEFT,
+                                right: Phaser.Keyboard.RIGHT,
+                             }, game.input.gamepad.pad1),
+            ];
 
         }
 
         function update() {
-            carrinho1.update();
+            for (var i = carrinhos.length - 1; i >= 0; i--) {
+                carrinhos[i].update();
+            };
         }
 
         function render() {
