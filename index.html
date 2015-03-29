@@ -44,9 +44,9 @@
             Object.keys(keys).forEach(function(i) {
                 car.keys[i] = car.game.input.keyboard.addKey(keys[i]);
                 car.game.input.keyboard.addKeyCapture([i])
-                console.log(car.keys[i])
+                //console.log(car.keys[i])
             });
-            console.log(this.keys)
+            //console.log(this.keys)
         }
 
         Carrinho.prototype.update = function() {
@@ -81,7 +81,6 @@
 
         function preload () {
 
-            game.load.image('logo', 'phaser.png');
             game.load.image('carrinho', 'carrim1.png')
 
         }
@@ -103,6 +102,17 @@
                                 left:  Phaser.Keyboard.LEFT,
                                 right: Phaser.Keyboard.RIGHT,
                              }, game.input.gamepad.pad1),
+                new Carrinho(game, 1, 0,
+                             game.world.centerX+100,
+                             game.world.centerY,
+                             0,
+                             {
+                                accel: Phaser.Keyboard.W,
+                                brake: Phaser.Keyboard.S,
+                                left:  Phaser.Keyboard.A,
+                                right: Phaser.Keyboard.D,
+                             }, game.input.gamepad.pad2),
+                
             ];
 
         }
@@ -111,6 +121,16 @@
             for (var i = carrinhos.length - 1; i >= 0; i--) {
                 carrinhos[i].update();
             };
+            var colliders = carrinhos.slice(0);
+            for(var i = colliders.length - 1; i >= 0; i--) {
+                var first = colliders[0];
+                colliders = colliders.slice(1);
+                for (var j = colliders.length - 1; j >= 0; j--) {
+                    game.physics.arcade.collide(first.car, colliders[j].car, function (a, b) {
+                        //console.log("hit!", a, b)
+                    });
+                };
+            }
         }
 
         function render() {
