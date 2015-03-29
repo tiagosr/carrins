@@ -25,7 +25,7 @@
             this.currentSpeed = 0;
             this.inGround = true;
 
-            this.drag = 300;
+            this.drag = 500;
 
             this.car = game.add.sprite(x, y, 'carrinho');
             this.car.anchor.set(0.5);
@@ -34,7 +34,7 @@
             this.car.body.immovable = false;
             this.car.body.collideWorldBounds = true;
             //this.car.body.linearDamping = 100;
-            this.car.body.drag.set(300, 300);
+            this.car.body.drag.set(this.drag, this.drag);
             this.car.body.bounce.setTo(1,1);
 
             this.car.angle = angle;
@@ -52,14 +52,14 @@
         Carrinho.prototype.update = function() {
             if(this.pad.isDown(Phaser.Gamepad.XBOX360_DPAD_LEFT)||this.keys['left'].isDown) {
                 //console.log("oe");
-                this.car.body.angularVelocity = -100; 
+                this.car.body.angularVelocity = -360; 
             } else if (this.pad.isDown(Phaser.Gamepad.XBOX360_DPAD_RIGHT)||this.keys.right.isDown) {
-                this.car.body.angularVelocity = 100;
+                this.car.body.angularVelocity = 360;
             } else {
                 this.car.body.angularVelocity = 0;
             }
             if(this.pad.isDown(Phaser.Gamepad.XBOX360_A)||this.keys.accel.isDown) {
-                this.currentSpeed = 300;
+                this.currentSpeed = 500;
             } else {
                 this.currentSpeed = 0;
             }
